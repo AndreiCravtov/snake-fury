@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "haskell build",
+      "type": "shell",
+      "command": "cabal build all",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "haskell clean & build",
+      "type": "shell",
+      "command": "cabal clean && cabal build all",
+      "group": "build"
+    },
+    {
+      "label": "haskell test",
+      "type": "shell",
+      "command": "cabal test all",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    }
+  ]
+}

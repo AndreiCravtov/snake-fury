@@ -1,0 +1,7 @@
+{
+  "direnv.restart.automatic": true,
+  "haskell.manageHLS": "PATH",
+  "haskell.serverExecutablePath": "haskell-language-server-wrapper",
+  "haskell.sessionLoading": "multipleComponents",
+  "haskell.plugin.semanticTokens.globalOn": true
+}

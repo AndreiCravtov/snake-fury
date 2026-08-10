@@ -22,7 +22,8 @@
         {
           default = pkgs.mkShell {
             packages = [
-              pkgs.haskell.compiler.ghc925
+              pkgs.haskellPackages.ghc
+              pkgs.haskellPackages.haskell-language-server
               pkgs.cabal-install
             ];
           };
