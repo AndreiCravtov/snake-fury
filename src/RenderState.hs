@@ -19,9 +19,8 @@
 module RenderState where
 
 -- This are all imports you need. Feel free to import more things.
-import Data.Array (Array, elems, listArray, (//))
+import Data.Array (Array, array, listArray, (!), (//))
 import Data.Foldable (foldl')
-import GHC.Arr (array, foldlElems', (!))
 
 -- A point is just a tuple of integers.
 type Point = (Int, Int)
