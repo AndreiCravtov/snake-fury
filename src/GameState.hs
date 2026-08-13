@@ -142,12 +142,12 @@ move b gs
       let -- snake grew: get new apple position
           (applePosition', g) = newApple b gs
           delta'' = (applePosition', Board.Apple) : delta'
-       in (Board.RenderBoard delta'', gs {snakeSeq = sn', applePosition = applePosition', randomGen = g})
+       in (Board.RenderBoard . reverse $ delta'', gs {snakeSeq = sn', applePosition = applePosition', randomGen = g})
   | otherwise =
       let -- snake didn't grow: next body-tail moves & no apple
           snakeBody'' :|> bodyTail = snakeBody'
           delta'' = (bodyTail, Board.Empty) : delta'
-       in (Board.RenderBoard delta'', gs {snakeSeq = (sn' {snakeBody = snakeBody''})})
+       in (Board.RenderBoard . reverse $ delta'', gs {snakeSeq = (sn' {snakeBody = snakeBody''})})
   where
     -- next head
     sn = snakeSeq gs
@@ -178,6 +178,6 @@ RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
 -- >>> fst $ move board_info game_state1
 -- >>> fst $ move board_info game_state2
 -- >>> fst $ move board_info game_state3
--- RenderBoard [((1,3),Empty),((1,1),Snake),((1,4),SnakeHead)]
--- RenderBoard [((2,4),Apple),((1,1),Snake),((2,1),SnakeHead)]
--- RenderBoard [((1,3),Empty),((1,1),Snake),((4,1),SnakeHead)]
+-- RenderBoard [((1,4),SnakeHead),((1,1),Snake),((1,3),Empty)]
+-- RenderBoard [((2,1),SnakeHead),((1,1),Snake),((2,4),Apple)]
+-- RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
