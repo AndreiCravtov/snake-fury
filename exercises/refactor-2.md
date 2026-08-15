@@ -62,7 +62,7 @@ This manual handling of states is clumsy and error prone. Very easily you can fo
 
 Now, let's go to the definition. The `State` monad is nothing else than a function from a state to a pair of a result and the updated state `type State a = SomeState -> (a, SomeState)` (the actual implementation is a little bit different). I'd recommend [monday morning haskell blog](https://mmhaskell.com/monads) as a reference for learning monads in depth. Here we are providing a shallow explanation. A _very_ important concept to understand when learning the `State` monad is that you are not handling a piece of data, you are defining a function. Maybe, a better name would have been the `StateTransformation` monad. I know this sounds abstract right now, but keep this in mind: _the state monad defines a transformation on a piece of data that will be provided later_.
 
-Now, how does the state monad help with the implementation? Essentialy, it applies state transformation automatically. Following the previous example:
+Now, how does the state monad help with the implementation? Essentially, it applies state transformation automatically. Following the previous example:
 
 ```haskell
 # Without state monad you have this

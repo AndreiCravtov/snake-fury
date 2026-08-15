@@ -174,7 +174,7 @@ getKey = reverse <$> getKey' ""
 {- | This function translates key strokes to movements and push then into the queue.
  The player is free to push keys as fast a he/she can but the userqueue is bounded,
  meaning that if we push a movement to a filled queue it gets discarded.
- This is intented for the game play, If we press keys faster than the game speed
+ This is intended for the game play, If we press keys faster than the game speed
  they will be enqueued and pushed into the game with delay.
 
 Check getKey function's comment for a hint

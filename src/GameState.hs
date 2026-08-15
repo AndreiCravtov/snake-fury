@@ -52,10 +52,10 @@ opositeMovement West = East
 --   You should take a look to System.Random documentation.
 --   Also, in the import list you have all relevant functions.
 makeRandomPoint :: BoardInfo -> StdGen -> (Point, StdGen)
-makeRandomPoint b g = ((y, x), g'')
+makeRandomPoint (BoardInfo h w) g = ((y, x), g'')
   where
-    (y, g') = randomR (1, height b) g
-    (x, g'') = randomR (1, width b) g'
+    (y, g') = randomR (1, h) g
+    (x, g'') = randomR (1, w) g'
 
 {-
 We can't test makeRandomPoint, because different implementation may lead to different valid result.
@@ -82,15 +82,13 @@ False
 -- | Calculates the new head of the snake. Considering it is moving in the current direction
 --   Take into account the edges of the board
 nextHead :: BoardInfo -> GameState -> Point
-nextHead b gs = case movement gs of
+nextHead (BoardInfo h w) (GameState (SnakeSeq (y, x) _) _ m _) = case m of
   North -> ((y - 1) `mod1` h, x)
   South -> ((y + 1) `mod1` h, x)
   East -> (y, (x + 1) `mod1` w)
   West -> (y, (x - 1) `mod1` w)
   where
     mod1 x' y' = ((x' - 1) `mod` y') + 1
-    (h, w) = (height b, width b)
-    (y, x) = snakeHead . snakeSeq $ gs
 
 {-
 This is a test for nextHead. It should return
@@ -113,11 +111,11 @@ True
 
 -- | Calculates a new random apple, avoiding creating the apple in the same place, or in the snake body
 newApple :: BoardInfo -> GameState -> (Point, StdGen)
-newApple b gs
-  | p == applePosition gs || inSnake p (snakeSeq gs) = newApple b (gs {randomGen = g})
-  | otherwise = (p, g)
+newApple b gs@(GameState sn apple _ g)
+  | p == apple || inSnake p sn = newApple b (gs {randomGen = g'})
+  | otherwise = (p, g')
   where
-    (p, g) = makeRandomPoint b (randomGen gs)
+    (p, g') = makeRandomPoint b g
 
 {- We can't test this function because it depends on makeRandomPoint -}
 
@@ -137,30 +135,29 @@ newApple b gs
 --        - 0 $ X          - 0 0 $
 -- We need to send the following delta: [((2,2), Apple), ((4,3), Snake), ((4,4), SnakeHead)]
 move :: BoardInfo -> GameState -> (Board.RenderMessage, GameState)
-move b gs
-  | inSnake snakeHead' sn = (Board.GameOver, gs)
-  | snakeHead' == applePosition gs =
-      let -- snake grew: get new apple position
-          (applePosition', g) = newApple b gs
-          delta'' = (applePosition', Board.Apple) : delta'
-       in (Board.RenderBoard . reverse $ delta'', gs {snakeSeq = sn', applePosition = applePosition', randomGen = g})
-  | otherwise =
-      let -- snake didn't grow: next body-tail moves & no apple
-          snakeBody'' :|> bodyTail = snakeBody'
-          delta'' = (bodyTail, Board.Empty) : delta'
-       in (Board.RenderBoard . reverse $ delta'', gs {snakeSeq = (sn' {snakeBody = snakeBody''})})
+move b gs@(GameState sn@(SnakeSeq head' body) apple _ _)
+  | colliding = (Board.GameOver, gs)
+  | eatingApple =
+      let sn' = SnakeSeq head'' (head' :<| body)
+          gs' = gs {snakeSeq = sn', applePosition = apple', randomGen = g'}
+          delta = [(head'', Board.SnakeHead), (head', Board.Snake), (apple', Board.Apple)]
+       in (Board.RenderBoard delta, gs')
+  | otherwise = case body of
+      S.Empty ->
+        let sn' = SnakeSeq head'' S.empty
+            gs' = gs {snakeSeq = sn'}
+            delta = [(head'', Board.SnakeHead), (head', Board.Empty)]
+         in (Board.RenderBoard delta, gs')
+      xs :|> x ->
+        let sn' = SnakeSeq head'' (head' :<| xs)
+            gs' = gs {snakeSeq = sn'}
+            delta = [(head'', Board.SnakeHead), (head', Board.Snake), (x, Board.Empty)]
+         in (Board.RenderBoard delta, gs')
   where
-    -- next head
-    sn = snakeSeq gs
-    snakeHead' = nextHead b gs
-    delta = [(snakeHead', Board.SnakeHead)]
-
-    -- next body-head
-    bodyHead = snakeHead sn
-    snakeBody' = bodyHead S.<| snakeBody sn
-    delta' = (bodyHead, Board.Snake) : delta
-
-    sn' = sn {snakeHead = snakeHead', snakeBody = snakeBody'}
+    head'' = nextHead b gs
+    colliding = inSnake head'' sn
+    eatingApple = head'' == apple
+    (apple', g') = newApple b gs
 
 {- This is a test for move. It should return
 

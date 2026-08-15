@@ -31,12 +31,12 @@ you will update the code to make a score which is updated each time the snake ea
 
 ## Step 2: Increase the speed every 10 scores up to 5 speed-ups
 
-In this part you'll be asked to modify some code of the `EventQueue`, which runs in the `IO` monad. So we can say that this will be your first contact with monads. Congrats! The only problem is that `EventQueue` is an asynchronous queue of events, so it can be a little bit too much for your first contact. Read carefully and don't worry if you need to sneek out the solution doing `git checkout solution-refactor-1`.
+In this part you'll be asked to modify some code of the `EventQueue`, which runs in the `IO` monad. So we can say that this will be your first contact with monads. Congrats! The only problem is that `EventQueue` is an asynchronous queue of events, so it can be a little bit too much for your first contact. Read carefully and don't worry if you need to seek out the solution doing `git checkout solution-refactor-1`.
 
 ### Task 2.1: Change the `EventQueue` speed
 
 - Take a look at functions `EventQueue.calculateSpeed` and `EventQueue.setSpeed`. The former is a pure function which calculates the speed given the score and the initial speed. The second is a function in the `IO` monad. Try to understand it as better as you can, but don't worry if you can't fully understand it.
-- Take a look at function `Main.gameloop`. The first line looks like `threadDelay $ initialSpeed queue`. Let's go step by step: `initialSpeed queue` accesses the `initialSpeed` field within the `EventQueue`. Unsurprisingly, this is the speed you set up when running the code. `threadDelay` essentialy stops the execution for a given number of microseconds. Therefore, this function looks at the speed you set when initializing the game and waits that much time.
+- Take a look at function `Main.gameloop`. The first line looks like `threadDelay $ initialSpeed queue`. Let's go step by step: `initialSpeed queue` accesses the `initialSpeed` field within the `EventQueue`. Unsurprisingly, this is the speed you set up when running the code. `threadDelay` essentially stops the execution for a given number of microseconds. Therefore, this function looks at the speed you set when initializing the game and waits that much time.
 - Your mission is to modify that part of the code to get the speed based on the `score` and wait that much time. Two changes are needed
   - the first line now should modify the speed. Use the function `setSpeed`. Given the right arguments it returns the new speed _in a monadic context!_ To access that value you have to _bind_ it: `new_speed <- setSpeed <args>`
   - Modify the second line (`threadDelay $ initialSpeed queue`) so now you wait the right amount of seconds.
