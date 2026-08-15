@@ -138,6 +138,7 @@ newApple b gs
 -- We need to send the following delta: [((2,2), Apple), ((4,3), Snake), ((4,4), SnakeHead)]
 move :: BoardInfo -> GameState -> (Board.RenderMessage, GameState)
 move b gs
+  | inSnake snakeHead' sn = (Board.GameOver, gs)
   | snakeHead' == applePosition gs =
       let -- snake grew: get new apple position
           (applePosition', g) = newApple b gs
